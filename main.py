@@ -22,7 +22,7 @@ epochs = spec['epochs'][0]
 
 # Check for cuda
 use_cuda = torch.cuda.is_available()
-
+print("Use_cuda:%s"%use_cuda)
 # Load data
 data_loader,_= get_mnist_dataloaders(batch_size=batch_size)
 
