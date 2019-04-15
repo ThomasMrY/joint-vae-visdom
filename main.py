@@ -8,7 +8,7 @@ from torch import optim
 dataset = "mnist"
 load_data = False
 viz_on = False
-num = 4
+num = 3
 
 path = './trained_models/'+dataset+'/'
 model_path = './trained_models/'+dataset+'/model'+str(num)+'.pt'

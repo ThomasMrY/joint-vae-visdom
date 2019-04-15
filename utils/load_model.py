@@ -16,7 +16,7 @@ def load(path):
         './trained_models/mnist/'. Note the path MUST end with a '/'
     """
     path_to_specs = path + 'specs.json'
-    path_to_model = path + 'new_model.pt'
+    path_to_model = path + '8356.pt'
 
     # Open specs file
     with open(path_to_specs) as specs_file:
