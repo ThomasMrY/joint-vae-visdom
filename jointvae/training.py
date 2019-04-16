@@ -12,7 +12,7 @@ EPS = 1e-12
 class Trainer():
     def __init__(self, model, optimizer, cont_capacity=None,
                  disc_capacity=None, spec=None, viz_on = False, print_loss_every=50, record_loss_every=5,
-                 use_cuda=False):
+                 use_cuda=False,num=0):
         """
         Class to handle training of model.
 
@@ -49,6 +49,7 @@ class Trainer():
         self.record_loss_every = record_loss_every
         self.use_cuda = use_cuda
         self.viz_on = viz_on
+        self.num = num
         self.data_gether = DataGather()
         self.viz = Visualizer(model, spec,self.viz_on)
         self.viz.viz_init(viz_name=spec['dataset'], viz_port=8097)
@@ -105,11 +106,11 @@ class Trainer():
         self.model.train()
         for epoch in range(epochs):
             mean_epoch_loss = self._train_epoch(data_loader)
-            print('Epoch: {} Average loss: {:.2f}'.format(epoch + 1,
+            print('Num: {} Epoch: {} Average loss: {:.2f}'.format(self.num, epoch + 1,
                                                           self.batch_size * self.model.num_pixels * mean_epoch_loss))
-            print('Cont C: {:.2f} Disc C: {:.2f}'.format(self.cont_cap_current, self.disc_cap_current))
+            print('Num: {} Cont C: {:.2f} Disc C: {:.2f}'.format(self.num, self.cont_cap_current, self.disc_cap_current))
 
-            self.viz.viz_confuse_matrix(self.data_gether, self.use_cuda)
+            self.viz.viz_confuse_matrix(self.data_gether, self.use_cuda,self.num)
 
             if save_training_gif is not None:
                 # Generate batch of images and convert to grid
@@ -147,9 +148,9 @@ class Trainer():
                     mean_loss = print_every_loss
                 else:
                     mean_loss = print_every_loss / self.print_loss_every
-                print('{}/{}\tLoss: {:.3f}'.format(batch_idx * len(data),
-                                                  len(data_loader.dataset),
-                                                  self.model.num_pixels * mean_loss))
+                # print('{}/{}\tLoss: {:.3f}'.format(batch_idx * len(data),
+                #                                   len(data_loader.dataset),
+                #                                   self.model.num_pixels * mean_loss))
                 if batch_idx != 0:
                     self.viz.viz_lines(self.data_gether)
                     self.data_gether.flush()

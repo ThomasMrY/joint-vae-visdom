@@ -380,7 +380,7 @@ class Visualizer():
             if images.shape[0] > 5:
                 self.viz.images(images[5:, :, :], env=self.viz_name + '_traversal',
                             opts=dict(title=str(gather.data['iter'][-1])), nrow=10)
-    def viz_confuse_matrix(self,gather,use_cuda):
+    def viz_confuse_matrix(self,gather,use_cuda,num):
         if use_cuda:
             imgs = self.imgs.cuda()
         latent_dist = self.model.encode(imgs)
@@ -395,7 +395,7 @@ class Visualizer():
             self.viz.heatmap(confusion, env=self.viz_name + '_confusematrix', win='confusion_matrix',
                              opts=dict(title=str(gather.data['iter'][-1])))
         clustering_acc = acc(self.labels.cpu().numpy(),predict_label.cpu().numpy())
-        print("clustering acc : {}".format(clustering_acc))
+        print("Num: {} clustering acc : {}".format(num, clustering_acc))
         if self.viz_on:
             if self.win_acc is None:
                 self.win_acc = self.viz.line(
