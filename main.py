@@ -6,6 +6,7 @@ from utils.dataloaders import get_dsprites_dataloader,get_mnist_dataloaders
 from utils.load_model import load_param
 from torch import optim
 
+Acc_list = []
 def training_process(num):
     dataset = "mnist"
     load_data = False
@@ -29,16 +30,16 @@ def training_process(num):
 
     # Define latent spec and model
     latent_spec = spec['latent_spec']
-    model = VAE(img_size=img_size, latent_spec=latent_spec,
+    locals()['model_'+str(i)] = VAE(img_size=img_size, latent_spec=latent_spec,
                 use_cuda=use_cuda)
     if use_cuda:
-        model.cuda()
+        locals()['model_'+str(i)].cuda()
 
     # Define optimizer
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.Adam(locals()['model_'+str(i)].parameters(), lr=lr)
 
     # Define trainer
-    trainer = Trainer(model, optimizer,
+    trainer = Trainer(locals()['model_'+str(i)], optimizer,
                       cont_capacity=spec['cont_capacity'],
                       disc_capacity=spec['disc_capacity'],
                       spec=spec,
@@ -47,8 +48,8 @@ def training_process(num):
                       num = num)
 
     # Train model for 100 epochs
-    trainer.train(data_loader, epochs)
-
+    acc = trainer.train(data_loader, epochs)
+    Acc_list.append(acc)
     # Save trained model
     torch.save(trainer.model.state_dict(), model_path)
     print("Training finished!!! :{}".format(num))
@@ -59,4 +60,10 @@ for i in range(5):
     t = threading.Thread(target=training_process , args=(i, ))
     threads.append(t)
     t.start()
+
+for t in threads:
     t.join()
+print("The final acc:\n")
+print(Acc_list)
+print("The highest acc ex:\n")
+print(Acc_list.index(max(Acc_list)))

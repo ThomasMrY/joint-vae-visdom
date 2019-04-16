@@ -50,6 +50,7 @@ class Trainer():
         self.use_cuda = use_cuda
         self.viz_on = viz_on
         self.num = num
+        self.acc = 0
         self.data_gether = DataGather()
         self.viz = Visualizer(model, spec,self.viz_on)
         self.viz.viz_init(viz_name=spec['dataset'], viz_port=8097)
@@ -110,7 +111,7 @@ class Trainer():
                                                           self.batch_size * self.model.num_pixels * mean_epoch_loss))
             print('Num: {} Cont C: {:.2f} Disc C: {:.2f}'.format(self.num, self.cont_cap_current, self.disc_cap_current))
 
-            self.viz.viz_confuse_matrix(self.data_gether, self.use_cuda,self.num)
+            self.acc = self.viz.viz_confuse_matrix(self.data_gether, self.use_cuda,self.num)
 
             if save_training_gif is not None:
                 # Generate batch of images and convert to grid
@@ -126,6 +127,7 @@ class Trainer():
         if save_training_gif is not None:
             imageio.mimsave(save_training_gif[0], training_progress_images,
                             fps=24)
+        return self.acc
 
     def _train_epoch(self, data_loader):
         """

@@ -390,7 +390,6 @@ class Visualizer():
             confusion[int(self.labels[i]), predict_label[i].item()] += 1
         for i in range(self.model.latent_disc_dim):
             confusion[i] = confusion[i] / confusion[i].sum()
-        print(confusion)
         if self.viz_on:
             self.viz.heatmap(confusion, env=self.viz_name + '_confusematrix', win='confusion_matrix',
                              opts=dict(title=str(gather.data['iter'][-1])))
@@ -419,6 +418,7 @@ class Visualizer():
                         height=400,
                         xlabel='iteration',
                         title='clustering acc', ))
+        return clustering_acc
 
 
 def reorder_img(orig_img, reorder, by_row=True, img_size=(3, 32, 32), padding=2):
