@@ -56,7 +56,7 @@ def training_process(num):
 
 threads = []
 
-for i in range(5):
+for i in range(9):
     t = threading.Thread(target=training_process , args=(i, ))
     threads.append(t)
     t.start()
