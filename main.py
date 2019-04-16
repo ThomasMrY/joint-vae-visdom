@@ -8,7 +8,6 @@ from torch import optim
 
 Acc_list = []
 def training_process(num):
-    global Acc_list
     dataset = "mnist"
     load_data = False
     viz_on = False
