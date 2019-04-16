@@ -112,7 +112,6 @@ class Trainer():
             print('Num: {} Cont C: {:.2f} Disc C: {:.2f}'.format(self.num, self.cont_cap_current, self.disc_cap_current))
 
             self.acc = self.viz.viz_confuse_matrix(self.data_gether, self.use_cuda,self.num)
-
             if save_training_gif is not None:
                 # Generate batch of images and convert to grid
                 viz = save_training_gif[1]

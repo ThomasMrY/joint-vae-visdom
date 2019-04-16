@@ -1,5 +1,5 @@
 import torch
-import threading
+import multiprocessing
 from jointvae.models import VAE
 from jointvae.training import Trainer
 from utils.dataloaders import get_dsprites_dataloader,get_mnist_dataloaders
@@ -8,6 +8,7 @@ from torch import optim
 
 Acc_list = []
 def training_process(num):
+    global Acc_list
     dataset = "mnist"
     load_data = False
     viz_on = False
@@ -54,15 +55,15 @@ def training_process(num):
     torch.save(trainer.model.state_dict(), model_path)
     print("Training finished!!! :{}".format(num))
 
-threads = []
+processes = []
 
 for i in range(9):
-    t = threading.Thread(target=training_process , args=(i, ))
-    threads.append(t)
-    t.start()
+    p = multiprocessing.Process(target=training_process , args=(i, ))
+    processes.append(p)
+    p.start()
 
-for t in threads:
-    t.join()
+for p in processes:
+    p.join()
 print("The final acc:\n")
 print(Acc_list)
 print("The highest acc ex:\n")
