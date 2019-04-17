@@ -57,7 +57,7 @@ def training_process(num,Acc_dic):
 
 processes = []
 
-for i in range(5):
+for i in range(7):
     p = multiprocessing.Process(target=training_process , args=(i,Acc_dic ))
     processes.append(p)
     p.start()

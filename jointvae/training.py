@@ -214,11 +214,15 @@ class Trainer():
             mean, logvar = latent_dist['cont']
             kl_cont_loss = self._kl_normal_loss(mean, logvar)
             # Linearly increase capacity of continuous channels
-            cont_min, cont_max, cont_num_iters, cont_gamma = \
+            cont_min, cont_max, start_iters, cont_num_iters, cont_gamma = \
                 self.cont_capacity
             # Increase continuous capacity without exceeding cont_max
-            cont_cap_current = (cont_max - cont_min) * self.num_steps / float(cont_num_iters) + cont_min
-            self.cont_cap_current = min(cont_cap_current, cont_max)
+            if self.num_steps < start_iters:
+                self.cont_cap_current = 0.0
+            else:
+                cont_cap_current = (cont_max - cont_min) * (self.num_steps - start_iters) / float(
+                    cont_num_iters) + cont_min
+                self.cont_cap_current = min(cont_cap_current, cont_max)
             # Calculate continuous capacity loss
             cont_capacity_loss = cont_gamma * torch.abs(self.cont_cap_current - kl_cont_loss)
 
@@ -226,15 +230,19 @@ class Trainer():
             # Calculate KL divergence
             kl_disc_loss = self._kl_multiple_discrete_loss(latent_dist['disc'])
             # Linearly increase capacity of discrete channels
-            disc_min, disc_max, disc_num_iters, disc_gamma = \
+            disc_min, disc_max, start_iters, disc_num_iters, disc_gamma = \
                 self.disc_capacity
             # Increase discrete capacity without exceeding disc_max or theoretical
             # maximum (i.e. sum of log of dimension of each discrete variable)
-            disc_cap_current = (disc_max - disc_min) * self.num_steps / float(disc_num_iters) + disc_min
-            disc_cap_current = min(disc_cap_current, disc_max)
-            # Require float conversion here to not end up with numpy float
-            disc_theoretical_max = sum([float(np.log(disc_dim)) for disc_dim in self.model.latent_spec['disc']])
-            self.disc_cap_current = min(disc_cap_current, disc_theoretical_max)
+            if self.num_steps < start_iters:
+                self.disc_cap_current = 0.0
+            else:
+                disc_cap_current = (disc_max - disc_min) * (self.num_steps - start_iters) / float(
+                    disc_num_iters) + disc_min
+                disc_cap_current = min(disc_cap_current, disc_max)
+                # Require float conversion here to not end up with numpy float
+                disc_theoretical_max = sum([float(np.log(disc_dim)) for disc_dim in self.model.latent_spec['disc']])
+                self.disc_cap_current = min(disc_cap_current, disc_theoretical_max)
             # Calculate discrete capacity loss
             disc_capacity_loss = disc_gamma * torch.abs(self.disc_cap_current - kl_disc_loss)
 
