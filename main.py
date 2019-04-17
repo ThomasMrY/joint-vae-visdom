@@ -6,8 +6,9 @@ from utils.dataloaders import get_dsprites_dataloader,get_mnist_dataloaders
 from utils.load_model import load_param
 from torch import optim
 data_loader,_= get_mnist_dataloaders(batch_size=256)
-Acc_list = []
-def training_process(num):
+m = multiprocessing.Manager()
+Acc_dic = m.dict()
+def training_process(num,Acc_dic):
     dataset = "mnist"
     load_data = False
     viz_on = False
@@ -49,7 +50,7 @@ def training_process(num):
 
     # Train model for 100 epochs
     acc = trainer.train(data_loader, epochs)
-    Acc_list.append(acc)
+    Acc_dic[num] = acc
     # Save trained model
     torch.save(trainer.model.state_dict(), model_path)
     print("Training finished!!! :{}".format(num))
@@ -57,13 +58,15 @@ def training_process(num):
 processes = []
 
 for i in range(5):
-    p = multiprocessing.Process(target=training_process , args=(i, ))
+    p = multiprocessing.Process(target=training_process , args=(i,Acc_dic ))
     processes.append(p)
     p.start()
 
 for p in processes:
     p.join()
+dataset = 'mnist'
+path = './trained_models/'+dataset+'/'
+spec,img_size = load_param(path)
+print(spec)
 print("The final acc:\n")
-print(Acc_list)
-print("The highest acc ex:\n")
-print(Acc_list.index(max(Acc_list)))
+print(Acc_dic)
