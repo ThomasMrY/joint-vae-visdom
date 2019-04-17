@@ -5,7 +5,7 @@ from jointvae.training import Trainer
 from utils.dataloaders import get_dsprites_dataloader,get_mnist_dataloaders
 from utils.load_model import load_param
 from torch import optim
-
+data_loader,_= get_mnist_dataloaders(batch_size=256)
 Acc_list = []
 def training_process(num):
     dataset = "mnist"
